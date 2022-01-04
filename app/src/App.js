@@ -13,8 +13,6 @@ SuperTokens.init({
     websiteDomain: 'http://localhost:3000',
   },
   recipeList: [
-    //EmailPassword.init(),
-
     ThirdPartyEmailPassword.init({
       signInAndUpFeature: {
         providers: [

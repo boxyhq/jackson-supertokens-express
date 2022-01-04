@@ -5,12 +5,9 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 let supertokens = require('supertokens-node');
 let Session = require('supertokens-node/recipe/session');
-let EmailPassword = require('supertokens-node/recipe/emailpassword');
 let cors = require('cors');
 let { middleware } = require('supertokens-node/framework/express');
 let { errorHandler } = require('supertokens-node/framework/express');
-let ThirdParty = require('supertokens-node/recipe/thirdparty');
-let { Google, Github, Apple } = ThirdParty;
 let {
   verifySession,
 } = require('supertokens-node/recipe/session/framework/express');
@@ -18,9 +15,6 @@ let ThirdPartyEmailPassword = require('supertokens-node/recipe/thirdpartyemailpa
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
-const jacksonBaseUrl = 'https://boxyhq.com/';
-const clientId = '123';
 
 var app = express();
 
@@ -33,6 +27,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+const oauth = {
+  clientId: '8958e13053832b5af58fdf2ee83f35f5d013dc74',
+  clientSecret: 'a1f508136cd39a4817ff3f52d871ec61115d86b33a25c89e',
+  jacksonBaseUrl: 'http://localhost:5000/oauth',
+};
 
 supertokens.init({
   framework: 'express',
@@ -50,28 +50,38 @@ supertokens.init({
         {
           id: 'saml-jackson',
           get: (redirectURI, authCodeFromRequest) => {
+            console.log(redirectURI, authCodeFromRequest);
+
             return {
               accessTokenAPI: {
-                url: 'https://oauth.example.com/token',
+                url: `${oauth.jacksonBaseUrl}/token`,
                 params: {
-                  client_id: clientId,
-                  client_secret: '<CLIENT SECRET>',
+                  client_id: oauth.clientId,
+                  client_secret: oauth.clientSecret,
                   grant_type: 'authorization_code',
                   redirect_uri: redirectURI,
                   code: authCodeFromRequest,
                 },
               },
               authorisationRedirect: {
-                url: 'https://oauth.example.com',
+                url: `${oauth.jacksonBaseUrl}/authorize`,
                 params: {
-                  client_id: clientId,
+                  client_id: oauth.clientId,
                   response_type: 'code',
                 },
               },
               getClientId: () => {
-                return clientId;
+                return oauth.clientId;
               },
-              getProfileInfo: async (accessTokenAPIResponse) => {},
+              getProfileInfo: async (accessTokenAPIResponse) => {
+                return {
+                  id: '1212122121',
+                  email: {
+                    id: 'demo1212122121@google.com',
+                    isVerified: true,
+                  },
+                };
+              },
             };
           },
         },
