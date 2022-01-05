@@ -16,19 +16,27 @@ You'll also need a SuperTokens instance. You can use a self hosted instance or p
 
 ### Install SAML Jackson
 
-`git clone https://github.com/boxyhq/jackson.git`
+```bash
+git clone https://github.com/boxyhq/jackson.git
+```
 
-`cd jackson`
+```bash
+cd jackson
+```
 
-`npm run dev-dbs`
+```bash
+npm run dev-dbs
+```
 
-`docker run --network=dev_default -p 5000:5000 -p 6000:6000 -e JACKSON_API_KEYS='secret' -e DB_URL='postgres://postgres:postgres@dev-postgres-1:5432/postgres' boxyhq/jackson:40706fd`
+```bash
+docker run --network=dev_default -p 5000:5000 -p 6000:6000 -e JACKSON_API_KEYS='secret' -e DB_URL='postgres://postgres:postgres@dev-postgres-1:5432/postgres' boxyhq/jackson:40706fd
+```
 
 ### Add SAML Metadata for a client
 
 Replace the `<Metadata XML>` with IdP Metadata XML.
 
-```sh
+```bash
 curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key secret' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
@@ -43,25 +51,39 @@ The response returns a JSON with `client_id` and `client_secret`. We'll need it 
 
 ### Clone this repo
 
-`git clone https://github.com/devkiran/jackson-supertokens.git`
+```bash
+git clone https://github.com/devkiran/jackson-supertokens.git
+```
 
-`cd jackson-supertokens`
+```bash
+cd jackson-supertokens
+```
 
 ### Setup app
 
-`cd app`
+```bash
+cd app
+```
 
-`npm install`
+```bash
+npm install
+```
 
-`npm start`
+```bash
+npm start
+```
 
 Open [http://localhost:3000/auth](http://localhost:3000/auth) to view it in your browser. The page will reload when you make changes.
 
 ### Setup api
 
-`cd api`
+```bash
+cd api
+```
 
-`npm install`
+```bash
+npm install
+```
 
 Replace the OAuth client details on the line #21
 
@@ -73,4 +95,6 @@ const oauth = {
 };
 ```
 
-`npm start`
+```bash
+npm start
+```
