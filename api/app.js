@@ -2,9 +2,10 @@ var createError = require('http-errors');
 var express = require('express');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+let cors = require('cors');
+const axios = require('axios');
 let supertokens = require('supertokens-node');
 let Session = require('supertokens-node/recipe/session');
-let cors = require('cors');
 let { middleware } = require('supertokens-node/framework/express');
 let { errorHandler } = require('supertokens-node/framework/express');
 let ThirdPartyEmailPassword = require('supertokens-node/recipe/thirdpartyemailpassword');
@@ -67,10 +68,18 @@ supertokens.init({
 
               // Get the profile info
               getProfileInfo: async (accessTokenAPIResponse) => {
+                const { data } = await axios({
+                  method: 'get',
+                  url: `${oauth.jacksonBaseUrl}/userinfo`,
+                  headers: {
+                    Authorization: `Bearer ${accessTokenAPIResponse.access_token}`,
+                  },
+                });
+
                 return {
-                  id: '1212122121',
+                  id: data.id,
                   email: {
-                    id: 'demo1212122121@google.com',
+                    id: data.email,
                     isVerified: true,
                   },
                 };
@@ -102,14 +111,6 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+app.use(function (err, req, res, next) {});
 
 module.exports = app;
