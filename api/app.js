@@ -36,6 +36,30 @@ supertokens.init({
   },
   recipeList: [
     ThirdPartyEmailPassword.init({
+      override: {
+        apis: (originalImplementation) => {
+          return {
+            ...originalImplementation,
+            authorisationUrlGET: async ({ options }) => {
+              const tenant = options.req.getKeyValueFromQuery('tenant');
+              const product = options.req.getKeyValueFromQuery('product');
+
+              const url = new URL(`${oauth.url}/authorize`);
+
+              url.searchParams.append(
+                'client_id',
+                encodeURI(`tenant=${tenant}&product=${product}`)
+              );
+
+              return {
+                status: 'OK',
+                url: url.href,
+              };
+            },
+          };
+        },
+      },
+
       providers: [
         {
           id: 'saml-jackson',
@@ -53,7 +77,7 @@ supertokens.init({
                 },
               },
 
-              // Return authorize URL
+              // Return authorize URL (Default implementation)
               authorisationRedirect: {
                 url: `${oauth.url}/authorize`,
                 params: {
