@@ -33,12 +33,26 @@ SuperTokens.init({
   },
   recipeList: [
     ThirdPartyEmailPassword.init({
+      preAPIHook: async (context) => {
+        let url = new URL(context.url);
+        let action = context.action;
+
+        if (action === 'GET_AUTHORISATION_URL') {
+          url.searchParams.append('tenant', 'boxyhq.com');
+          url.searchParams.append('product', 'demo');
+        }
+
+        return {
+          requestInit: context.requestInit,
+          url: url.href,
+        };
+      },
+
       signInAndUpFeature: {
         providers: [
           {
             id: 'saml-jackson',
             name: 'SAML Jackson',
-            //clientId: '8958e13053832b5af58fdf2ee83f35f5d013dc74',
           },
         ],
       },
