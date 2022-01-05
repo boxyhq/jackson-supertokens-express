@@ -1,12 +1,16 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import SuperTokens, {
   getSuperTokensRoutesForReactRouterDom,
 } from 'supertokens-auth-react';
 import Session from 'supertokens-auth-react/recipe/session';
-import { ThirdPartyAuth } from 'supertokens-auth-react/recipe/thirdparty';
-import ThirdPartyEmailPassword from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
+import ThirdPartyEmailPassword, {
+  ThirdPartyEmailPasswordAuth,
+} from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
 import './App.css';
+import Footer from './Footer';
 import Home from './Home';
+import SessionExpiredPopup from './SessionExpiredPopup';
 
 export function getApiDomain() {
   const apiPort = process.env.REACT_APP_API_PORT || 4000;
@@ -38,28 +42,43 @@ SuperTokens.init({
         ],
       },
     }),
-
     Session.init(),
   ],
 });
 
 function App() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* This shows the login UI on "/auth" route */}
-        {getSuperTokensRoutesForReactRouterDom(require('react-router-dom'))}
+  let [showSessionExpiredPopup, updateShowSessionExpiredPopup] =
+    useState(false);
 
-        <Route
-          path="/"
-          element={
-            <ThirdPartyAuth>
-              <Home />
-            </ThirdPartyAuth>
-          }
-        ></Route>
-      </Routes>
-    </BrowserRouter>
+  return (
+    <div className="App">
+      <Router>
+        <div className="fill">
+          <Routes>
+            {/* This shows the login UI on "/auth" route */}
+            {getSuperTokensRoutesForReactRouterDom(require('react-router-dom'))}
+
+            <Route
+              path="/"
+              element={
+                /* This protects the "/" route so that it shows
+                                   <Home /> only if the user is logged in.
+                                   Else it redirects the user to "/auth" */
+                <ThirdPartyEmailPasswordAuth
+                  onSessionExpired={() => {
+                    updateShowSessionExpiredPopup(true);
+                  }}
+                >
+                  <Home />
+                  {showSessionExpiredPopup && <SessionExpiredPopup />}
+                </ThirdPartyEmailPasswordAuth>
+              }
+            />
+          </Routes>
+        </div>
+        <Footer />
+      </Router>
+    </div>
   );
 }
 

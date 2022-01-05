@@ -28,26 +28,6 @@ export default function SuccessView(props) {
       Your user ID is
       <div />
       {userId}
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      {/* <CallAPIView /> */}
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      ------------------------------------
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      <div style={{ height: '10px' }} />
-      <a
-        href="https://github.com/supertokens/supertokens-auth-react/tree/master/examples/with-thirdparty"
-        target="_blank"
-        rel="noreferrer"
-      >
-        View the code on GitHub
-      </a>
     </div>
   );
 }
