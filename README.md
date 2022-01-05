@@ -6,11 +6,14 @@ You have to host a SAML Jackson instance on Docker.
 
 You'll also need a SuperTokens instance. You can use a self hosted instance or purchase a subscription or use their demo instance.
 
-## Demo Instructions
+## Demo Information
 
 - The demo app is configured to use the SuperTokens demo instance `https://try.supertokens.io`
-- The `api` server runs at `http://localhost:4000`
-- The `app` (React) runs at `http://localhost:3000`
+- The `app` (React): `http://localhost:3000`
+- The `api` (Express) server: `http://localhost:4000`
+- Jackson server: `http://localhost:5000`
+- Jackson internal server: `http://localhost:6000`
+- Jackson uses `Postgres` as database engine
 
 ## Setup Demo
 
