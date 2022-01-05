@@ -17,10 +17,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-// OAuth client
 const oauth = {
-  clientId: '8958e13053832b5af58fdf2ee83f35f5d013dc74',
-  clientSecret: 'a1f508136cd39a4817ff3f52d871ec61115d86b33a25c89e',
   url: 'http://localhost:5000/oauth',
 };
 
