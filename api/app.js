@@ -1,6 +1,5 @@
 var createError = require('http-errors');
 var express = require('express');
-var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 let supertokens = require('supertokens-node');
@@ -8,25 +7,14 @@ let Session = require('supertokens-node/recipe/session');
 let cors = require('cors');
 let { middleware } = require('supertokens-node/framework/express');
 let { errorHandler } = require('supertokens-node/framework/express');
-let {
-  verifySession,
-} = require('supertokens-node/recipe/session/framework/express');
 let ThirdPartyEmailPassword = require('supertokens-node/recipe/thirdpartyemailpassword');
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-
 var app = express();
-
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
 
 const oauth = {
   clientId: '8958e13053832b5af58fdf2ee83f35f5d013dc74',
@@ -40,7 +28,7 @@ supertokens.init({
     connectionURI: 'https://try.supertokens.io',
   },
   appInfo: {
-    appName: 'Jackson',
+    appName: 'SAML Jackson',
     apiDomain: 'http://localhost:4000',
     websiteDomain: 'http://localhost:3000',
   },
@@ -50,9 +38,8 @@ supertokens.init({
         {
           id: 'saml-jackson',
           get: (redirectURI, authCodeFromRequest) => {
-            console.log(redirectURI, authCodeFromRequest);
-
             return {
+              // Return access token
               accessTokenAPI: {
                 url: `${oauth.jacksonBaseUrl}/token`,
                 params: {
@@ -63,6 +50,8 @@ supertokens.init({
                   code: authCodeFromRequest,
                 },
               },
+
+              // Return authorize URL
               authorisationRedirect: {
                 url: `${oauth.jacksonBaseUrl}/authorize`,
                 params: {
@@ -70,9 +59,13 @@ supertokens.init({
                   response_type: 'code',
                 },
               },
+
+              // Return client id
               getClientId: () => {
                 return oauth.clientId;
               },
+
+              // Get the profile info
               getProfileInfo: async (accessTokenAPIResponse) => {
                 return {
                   id: '1212122121',
@@ -101,20 +94,6 @@ app.use(
 );
 
 app.use(middleware());
-
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-app.use('/me', verifySession(), async (req, res) => {
-  const { userId } = req.session;
-
-  // const userInfo = await EmailPassword.getUserById(userId);
-
-  res.send({
-    userId,
-  });
-});
-
 app.use(errorHandler());
 
 // catch 404 and forward to error handler

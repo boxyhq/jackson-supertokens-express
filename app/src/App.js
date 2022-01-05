@@ -18,7 +18,7 @@ SuperTokens.init({
         providers: [
           {
             id: 'saml-jackson',
-            name: 'Jackson',
+            name: 'SAML Jackson',
           },
         ],
       },
