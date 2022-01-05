@@ -101,7 +101,3 @@ const oauth = {
 ```bash
 npm start
 ```
-
-### To Do
-
-- How to pass additional params (tenant + product)
