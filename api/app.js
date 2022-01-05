@@ -17,10 +17,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+// OAuth client
 const oauth = {
   clientId: '8958e13053832b5af58fdf2ee83f35f5d013dc74',
   clientSecret: 'a1f508136cd39a4817ff3f52d871ec61115d86b33a25c89e',
-  jacksonBaseUrl: 'http://localhost:5000/oauth',
+  url: 'http://localhost:5000/oauth',
 };
 
 supertokens.init({
@@ -42,7 +43,7 @@ supertokens.init({
             return {
               // Return access token
               accessTokenAPI: {
-                url: `${oauth.jacksonBaseUrl}/token`,
+                url: `${oauth.url}/token`,
                 params: {
                   client_id: oauth.clientId,
                   client_secret: oauth.clientSecret,
@@ -54,7 +55,7 @@ supertokens.init({
 
               // Return authorize URL
               authorisationRedirect: {
-                url: `${oauth.jacksonBaseUrl}/authorize`,
+                url: `${oauth.url}/authorize`,
                 params: {
                   client_id: oauth.clientId,
                   response_type: 'code',
@@ -70,7 +71,7 @@ supertokens.init({
               getProfileInfo: async (accessTokenAPIResponse) => {
                 const { data } = await axios({
                   method: 'get',
-                  url: `${oauth.jacksonBaseUrl}/userinfo`,
+                  url: `${oauth.url}/userinfo`,
                   headers: {
                     Authorization: `Bearer ${accessTokenAPIResponse.access_token}`,
                   },
