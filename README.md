@@ -44,7 +44,7 @@ curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
 --header 'Authorization: Api-Key secret' \
 --header 'Content-Type: application/x-www-form-urlencoded' \
 --data-urlencode 'rawMetadata=<Metadata XML>' \
---data-urlencode 'defaultRedirectUrl=http://localhost:3000/oauth/callback/saml-jackson' \
+--data-urlencode 'defaultRedirectUrl=http://localhost:3000/auth/callback/saml-jackson' \
 --data-urlencode 'redirectUrl=["http://localhost:3000/*"]' \
 --data-urlencode 'tenant=boxyhq.com' \
 --data-urlencode 'product=demo'
@@ -101,3 +101,7 @@ const oauth = {
 ```bash
 npm start
 ```
+
+### To Do
+
+- How to pass additional params (tenant + product)
