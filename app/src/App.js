@@ -42,6 +42,11 @@ SuperTokens.init({
           url.searchParams.append('product', 'demo');
         }
 
+        if (action === 'THIRD_PARTY_SIGN_IN_UP') {
+          url.searchParams.append('tenant', 'boxyhq.com');
+          url.searchParams.append('product', 'demo');
+        }
+
         return {
           requestInit: context.requestInit,
           url: url.href,

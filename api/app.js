@@ -40,9 +40,14 @@ supertokens.init({
         apis: (originalImplementation) => {
           return {
             ...originalImplementation,
-            authorisationUrlGET: async ({ options }) => {
-              const tenant = options.req.getKeyValueFromQuery('tenant');
-              const product = options.req.getKeyValueFromQuery('product');
+
+            // Return authorize URL
+            authorisationUrlGET: async (input) => {
+              const { options } = input;
+              const { req } = options;
+
+              const tenant = req.getKeyValueFromQuery('tenant');
+              const product = req.getKeyValueFromQuery('product');
 
               const url = new URL(`${oauth.url}/authorize`);
 
@@ -56,6 +61,53 @@ supertokens.init({
                 url: url.href,
               };
             },
+
+            // Signup
+            thirdPartySignInUpPOST: async (input) => {
+              const { code, redirectURI, options } = input;
+              const { signInUp } = options.recipeImplementation;
+              const { req, res } = options;
+
+              const tenant = req.getKeyValueFromQuery('tenant');
+              const product = req.getKeyValueFromQuery('product');
+
+              // Code exchange
+              const token = await axios({
+                method: 'post',
+                url: `${oauth.url}/token`,
+                data: {
+                  client_id: encodeURI(`tenant=${tenant}&product=${product}`),
+                  client_secret: 'client-secret',
+                  grant_type: 'authorization_code',
+                  redirect_uri: redirectURI,
+                  code: code,
+                },
+              });
+
+              // Get profile
+              const profile = await axios({
+                method: 'get',
+                url: `${oauth.url}/userinfo`,
+                headers: {
+                  Authorization: `Bearer ${token.data.access_token}`,
+                },
+              });
+
+              // Signup
+              const result = await signInUp({
+                thirdPartyUserId: profile.data.id,
+                thirdPartyId: 'saml-jackson',
+                email: {
+                  id: profile.data.email,
+                  isVerified: true,
+                },
+              });
+
+              // Create session
+              await Session.createNewSession(res, result.user.id);
+
+              return result;
+            },
           };
         },
       },
@@ -63,54 +115,6 @@ supertokens.init({
       providers: [
         {
           id: 'saml-jackson',
-          get: (redirectURI, authCodeFromRequest) => {
-            return {
-              // Return access token
-              accessTokenAPI: {
-                url: `${oauth.url}/token`,
-                params: {
-                  client_id: oauth.clientId,
-                  client_secret: oauth.clientSecret,
-                  grant_type: 'authorization_code',
-                  redirect_uri: redirectURI,
-                  code: authCodeFromRequest,
-                },
-              },
-
-              // Return authorize URL (Default implementation)
-              authorisationRedirect: {
-                url: `${oauth.url}/authorize`,
-                params: {
-                  client_id: oauth.clientId,
-                  response_type: 'code',
-                },
-              },
-
-              // Return client id
-              getClientId: () => {
-                return oauth.clientId;
-              },
-
-              // Get the profile info
-              getProfileInfo: async (accessTokenAPIResponse) => {
-                const { data } = await axios({
-                  method: 'get',
-                  url: `${oauth.url}/userinfo`,
-                  headers: {
-                    Authorization: `Bearer ${accessTokenAPIResponse.access_token}`,
-                  },
-                });
-
-                return {
-                  id: data.id,
-                  email: {
-                    id: data.email,
-                    isVerified: true,
-                  },
-                };
-              },
-            };
-          },
         },
       ],
     }),
