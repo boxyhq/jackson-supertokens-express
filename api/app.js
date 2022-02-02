@@ -17,19 +17,26 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-const oauth = {
-  url: 'http://localhost:5000/oauth',
-};
+app.use('/hello', (req, res) => {
+  res.send('Hello there')
+})
+
+const oauthUrl = 'http://jackson:5000';
+const supertokenUrl = 'http://supertoken:3567';
+const apiUrl = 'http://localhost:4000';
+const appUrl = 'http://localhost:3000';
 
 supertokens.init({
   framework: 'express',
   supertokens: {
-    connectionURI: 'https://try.supertokens.io',
+    connectionURI: supertokenUrl,
+    // connectionURI: 'https://6b126a21840311ecbd223130e9c03878-ap-southeast-1.aws.supertokens.io:3572',
+    // apiKey: 'FRQswBb0I5LHFW8F=o6EoPwA9jgNDd'
   },
   appInfo: {
     appName: 'SAML Jackson',
-    apiDomain: 'http://localhost:4000',
-    websiteDomain: 'http://localhost:3000',
+    apiDomain: apiUrl,
+    websiteDomain: appUrl,
   },
   recipeList: [
     ThirdPartyEmailPassword.init({
@@ -46,7 +53,7 @@ supertokens.init({
               const tenant = req.getKeyValueFromQuery('tenant');
               const product = req.getKeyValueFromQuery('product');
 
-              const url = new URL(`${oauth.url}/authorize`);
+              const url = new URL(`${oauthUrl}/api/oauth/authorize`);
 
               url.searchParams.append(
                 'client_id',
@@ -71,7 +78,7 @@ supertokens.init({
               // Code exchange
               const token = await axios({
                 method: 'post',
-                url: `${oauth.url}/token`,
+                url: `${oauthUrl}/api/oauth/token`,
                 data: {
                   client_id: encodeURI(`tenant=${tenant}&product=${product}`),
                   client_secret: 'client-secret',
@@ -84,26 +91,30 @@ supertokens.init({
               // Get profile
               const profile = await axios({
                 method: 'get',
-                url: `${oauth.url}/userinfo`,
+                url: `${oauthUrl}/api/oauth/userinfo`,
                 headers: {
                   Authorization: `Bearer ${token.data.access_token}`,
                 },
               });
 
-              // Signup
-              const result = await signInUp({
-                thirdPartyUserId: profile.data.id,
-                thirdPartyId: 'saml-jackson',
-                email: {
-                  id: profile.data.email,
-                  isVerified: true,
-                },
-              });
+              try {
+                // Signup
+                const result = await signInUp({
+                  thirdPartyUserId: profile.data.id,
+                  thirdPartyId: 'saml-jackson',
+                  email: {
+                    id: profile.data.email,
+                    isVerified: true,
+                  },
+                });
 
-              // Create session
-              await Session.createNewSession(res, result.user.id);
+                // Create session
+                await Session.createNewSession(res, result.user.id);
 
-              return result;
+                return result;
+              } catch (e) {
+                console.log(e)
+              }
             },
           };
         },
