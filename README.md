@@ -9,13 +9,18 @@ You'll also need a SuperTokens instance. You can use a self hosted instance or p
 
 # With Docker
 
-## Run Docker compose
+```bash
+git clone -b docker-compose https://github.com/boxyhq/jackson.git
+```
+
+```bash
+cd jackson
+```
 
 ```bash
 docker-compose up -d --build
 ```
 
-## Try the demo app
 Open [http://localhost:3000](http://localhost:3000) to try the demo.
 
 # Without Docker
