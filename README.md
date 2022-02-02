@@ -6,6 +6,20 @@ You have to host a SAML Jackson instance on Docker.
 
 You'll also need a SuperTokens instance. You can use a self hosted instance or purchase a subscription or use their demo instance.
 
+
+# With Docker
+
+## Run Docker compose
+
+```bash
+docker-compose up -d --build
+```
+
+## Try the demo app
+Visit the URL `http://localhost:3000`
+
+# Without Docker
+
 ## Demo Information
 
 - The demo app is configured to use the SuperTokens demo instance `https://try.supertokens.io`
