@@ -9,7 +9,7 @@ services:
     environment:
       - POSTGRES_PASSWORD=postgres
     networks:
-      - network1
+      - supertokens
 
   jackson:
     image: "boxyhq/jackson"
@@ -23,7 +23,7 @@ services:
       - DB_TYPE=postgres
       - DB_URL=postgres://postgres:postgres@postgres:5432/postgres
     networks:
-      - network1
+      - supertokens
 
   supertoken:
     image: "registry.supertokens.io/supertokens/supertokens-postgresql"
@@ -34,21 +34,21 @@ services:
     environment:
       - POSTGRESQL_CONNECTION_URI=postgres://postgres:postgres@postgres:5432/postgres
     networks:
-      - network1
+      - supertokens
 
   app:
     build: ./app
     ports:
       - 3000:3000
     networks:
-      - network1
+      - supertokens
 
   api:
     build: ./api
     ports:
       - 4000:4000
     networks:
-      - network1
+      - supertokens
 
 networks:
-  network1:
+  supertokens:
