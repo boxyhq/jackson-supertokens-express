@@ -9,6 +9,8 @@ You'll also need a SuperTokens instance. You can use a self hosted instance or p
 
 # With Docker
 
+## Setup
+
 ```bash
 git clone -b docker-compose https://github.com/boxyhq/jackson.git
 ```
@@ -21,6 +23,25 @@ cd jackson
 docker-compose up -d --build
 ```
 
+## Add SAML Config
+
+Replace `<Metadata>` with the your metadata content.
+
+```bash
+curl --location --request POST 'http://localhost:5000/api/v1/saml/config' \
+  --header 'Authorization: Api-Key secret' \
+  --header 'Content-Type: application/x-www-form-urlencoded' \
+  --data-urlencode 'rawMetadata= <Metadata>' \
+  --data-urlencode 'defaultRedirectUrl=http://localhost:3000' \
+  --data-urlencode 'redirectUrl=["http://localhost:3000/*"]' \
+  --data-urlencode 'tenant=boxyhq.com' \
+  --data-urlencode 'product=demo'
+```
+
+## Configure SAML Identity Provider
+Follow the [doc](https://boxyhq.com/docs/jackson/configure-saml-idp) 
+
+## Try the Demo
 Open [http://localhost:3000](http://localhost:3000) to try the demo.
 
 # Without Docker
