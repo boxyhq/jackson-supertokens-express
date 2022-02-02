@@ -16,7 +16,7 @@ docker-compose up -d --build
 ```
 
 ## Try the demo app
-Visit the URL `http://localhost:3000`
+Open [http://localhost:3000](http://localhost:3000) to try the demo.
 
 # Without Docker
 
