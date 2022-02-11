@@ -12,7 +12,7 @@
   },
   "license": "Apache 2.0",
   "scripts": {
-    "dev": "docker-compose -f ./docker-compose.yml up -d",
+    "dev": "docker-compose -f ./docker-compose.yml up -d --build",
     "dev-destroy": "docker-compose -f ./docker-compose.yml down --volumes --remove-orphans"
   },
   "dependencies": {
