@@ -18,6 +18,9 @@ cd jackson-supertokens-express
 npm run dev
 ```
 
+## Configure SAML Identity Provider
+Follow the [doc](https://boxyhq.com/docs/jackson/configure-saml-idp). You will then need to download the SAML metadata file after configuring the SAML app with your Identity Provider. Okta is a good place and offers a free Developer Account. Feel free to contact us if you need any help with this.
+
 ## Add SAML Config
 
 Replace `<Metadata>` with the your metadata content.
@@ -30,14 +33,11 @@ curl --location --request POST 'http://localhost:5000/api/v1/saml/config' \
   --data-urlencode 'defaultRedirectUrl=http://localhost:3000' \
   --data-urlencode 'redirectUrl=["http://localhost:3000/*"]' \
   --data-urlencode 'tenant=boxyhq.com' \
-  --data-urlencode 'product=demo'
+  --data-urlencode 'product=supertokens'
 ```
 
-## Configure SAML Identity Provider
-Follow the [doc](https://boxyhq.com/docs/jackson/configure-saml-idp) 
-
 ## Try the Demo
-Open [http://localhost:3000](http://localhost:3000) to try the demo.
+Open [http://localhost:3000](http://localhost:3000) to try the demo. Click on the button `Continue with SAML Jackson`.
 
 # Demo Information
 
@@ -46,24 +46,3 @@ Open [http://localhost:3000](http://localhost:3000) to try the demo.
 - The `api` (Express) server: `http://localhost:4000`
 - Jackson self-hosted instance server: `http://localhost:5000`
 - Jackson uses `Postgres` as database engine
-
-## Setup Demo
-
-### Add SAML Metadata for a client
-
-Replace the `<Metadata XML>` with IdP Metadata XML.
-
-```bash
-curl --location --request POST 'http://localhost:6000/api/v1/saml/config' \
---header 'Authorization: Api-Key secret' \
---header 'Content-Type: application/x-www-form-urlencoded' \
---data-urlencode 'rawMetadata=<Metadata XML>' \
---data-urlencode 'defaultRedirectUrl=http://localhost:3000/auth/callback/saml-jackson' \
---data-urlencode 'redirectUrl=["http://localhost:3000/*"]' \
---data-urlencode 'tenant=boxyhq.com' \
---data-urlencode 'product=demo'
-```
-
-The response returns a JSON with `client_id` and `client_secret`. We'll need it in the next step.
-
-Open [http://localhost:3000/auth](http://localhost:3000/auth) to view it in your browser. The page will reload when you make changes. Click on the button `Continue with SAML Jackson`

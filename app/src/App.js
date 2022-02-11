@@ -39,12 +39,12 @@ SuperTokens.init({
 
         if (action === 'GET_AUTHORISATION_URL') {
           url.searchParams.append('tenant', 'boxyhq.com');
-          url.searchParams.append('product', 'demo');
+          url.searchParams.append('product', 'supertokens');
         }
 
         if (action === 'THIRD_PARTY_SIGN_IN_UP') {
           url.searchParams.append('tenant', 'boxyhq.com');
-          url.searchParams.append('product', 'demo');
+          url.searchParams.append('product', 'supertokens');
         }
 
         return {
