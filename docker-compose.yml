@@ -12,7 +12,7 @@ services:
       - supertokens
 
   jackson:
-    image: "boxyhq/jackson"
+    image: "boxyhq/jackson:3201206"
     depends_on:
       - postgres
     ports:

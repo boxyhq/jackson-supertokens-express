@@ -12,11 +12,11 @@ You'll also need a SuperTokens instance. You can use a self hosted instance or p
 ## Setup
 
 ```bash
-git clone -b docker-compose https://github.com/boxyhq/jackson.git
+git clone -b docker-compose https://github.com/boxyhq/jackson-supertokens-express.git
 ```
 
 ```bash
-cd jackson
+cd jackson-supertokens-express
 ```
 
 ```bash
