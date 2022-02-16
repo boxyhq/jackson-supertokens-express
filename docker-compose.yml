@@ -13,6 +13,7 @@ services:
 
   jackson:
     image: "boxyhq/jackson:0.3.6"
+    platform: linux/amd64
     depends_on:
       - postgres
     ports:
