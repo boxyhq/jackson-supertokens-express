@@ -21,11 +21,11 @@ app.use('/hello', (req, res) => {
   res.send('Hello there')
 })
 
-const jacksonApiUrl = 'http://jackson:5000';
-const jacksonAuthUrl = 'http://localhost:5000';
+const jacksonApiUrl = 'http://jackson:5225';
+const jacksonAuthUrl = 'http://localhost:5225';
 const supertokenUrl = 'http://supertoken:3567';
 const apiUrl = 'http://localhost:4000';
-const appUrl = 'http://localhost:3000';
+const appUrl = 'http://localhost:3366';
 
 supertokens.init({
   framework: 'express',
@@ -80,7 +80,7 @@ supertokens.init({
                 url: `${jacksonApiUrl}/api/oauth/token`,
                 data: {
                   client_id: encodeURI(`tenant=${tenant}&product=${product}`),
-                  client_secret: 'client-secret',
+                  client_secret: 'dummy',
                   grant_type: 'authorization_code',
                   redirect_uri: redirectURI,
                   code: code,
@@ -132,7 +132,7 @@ supertokens.init({
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3366',
     allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
     credentials: true,
   })
