@@ -44,91 +44,66 @@ supertokens.init({
         apis: (originalImplementation) => {
           return {
             ...originalImplementation,
-
-            // Return authorize URL
             authorisationUrlGET: async (input) => {
-              const { options } = input;
-              const { req } = options;
-
-              const tenant = req.getKeyValueFromQuery('tenant');
-              const product = req.getKeyValueFromQuery('product');
-
-              const url = new URL(`${jacksonAuthUrl}/api/oauth/authorize`);
-
-              url.searchParams.append(
-                'client_id',
-                encodeURI(`tenant=${tenant}&product=${product}`)
-              );
-
-              return {
-                status: 'OK',
-                url: url.href,
-              };
+              input.userContext.request = input.options.req.original
+              return originalImplementation.authorisationUrlGET(input);
             },
-
-            // Signup
             thirdPartySignInUpPOST: async (input) => {
-              const { code, redirectURI, options } = input;
-              const { signInUp } = options.recipeImplementation;
-              const { req, res } = options;
-
-              const tenant = req.getKeyValueFromQuery('tenant');
-              const product = req.getKeyValueFromQuery('product');
-
-              // Code exchange
-              const token = await axios({
-                method: 'post',
-                url: `${jacksonApiUrl}/api/oauth/token`,
-                data: {
-                  client_id: encodeURI(`tenant=${tenant}&product=${product}`),
-                  client_secret: 'dummy',
-                  grant_type: 'authorization_code',
-                  redirect_uri: redirectURI,
-                  code: code,
-                },
-              });
-
-              console.log(token.data);
-
-              // Get profile
-              const profile = await axios({
-                method: 'get',
-                url: `${jacksonApiUrl}/api/oauth/userinfo`,
-                headers: {
-                  Authorization: `Bearer ${token.data.access_token}`,
-                },
-              });
-
-              try {
-                // Signup
-                const result = await signInUp({
-                  thirdPartyUserId: profile.data.id,
-                  thirdPartyId: 'saml-jackson',
-                  email: {
-                    id: profile.data.email,
-                    isVerified: true,
-                  },
-                });
-
-                // Create session
-                await Session.createNewSession(res, result.user.id);
-
-                return result;
-              } catch (e) {
-                console.log(e)
-              }
+              input.userContext.request = input.options.req.original
+              return originalImplementation.thirdPartySignInUpPOST(input);
             },
           };
         },
       },
-
       providers: [
         {
-          id: 'saml-jackson',
-        },
-      ],
+          id: "saml-jackson",
+          get: (redirectURI, authCodeFromRequest, userContext) => {
+            let request = userContext.request;
+            let tenant = request === undefined ? "" : request.query.tenant;
+            let product = request === undefined ? "" : request.query.product;
+            let client_id = encodeURI(`tenant=${tenant}&product=${product}`)
+            return {
+              accessTokenAPI: {
+                url: `${jacksonApiUrl}/api/oauth/token`,
+                params: {
+                  client_id,
+                  client_secret: "dummy",
+                  grant_type: "authorization_code",
+                  redirect_uri: redirectURI,
+                  code: authCodeFromRequest,
+                }
+              },
+              authorisationRedirect: {
+                url: `${jacksonAuthUrl}/api/oauth/authorize`,
+                params: {
+                  client_id
+                }
+              },
+              getClientId: () => {
+                return client_id;
+              },
+              getProfileInfo: async (accessTokenAPIResponse) => {
+                const profile = await axios({
+                  method: 'get',
+                  url: `${jacksonApiUrl}/api/oauth/userinfo`,
+                  headers: {
+                    Authorization: `Bearer ${accessTokenAPIResponse.access_token}`,
+                  },
+                });
+                return {
+                  id: profile.data.id,
+                  email: {
+                    id: profile.data.email,
+                    isVerified: true
+                  }
+                };
+              }
+            }
+          }
+        }
+      ]
     }),
-
     Session.init(),
   ],
 });
@@ -153,16 +128,3 @@ app.use(function (req, res, next) {
 app.use(function (err, req, res, next) { });
 
 module.exports = app;
-
-
-/*
-TODO: for docs
-Limitations:
-- No refresh token at the moment, therefore automatic revoking of session from SAML provider doesn't happen
-- The SAML callback URL doesn't have the tenantID and product, so we are only limited to one SAML provider.
-*/
-
-/*
-SAML self serve:
-- Admins would need to upload the SAML XML into the app which then should be sent to boxyHQ to create a new tenant.
-*/
