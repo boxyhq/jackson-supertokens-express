@@ -21,11 +21,12 @@ app.use('/hello', (req, res) => {
   res.send('Hello there')
 })
 
-const jacksonApiUrl = 'http://jackson:5000';
-const jacksonAuthUrl = 'http://localhost:5000';
+const jacksonApiUrl = 'http://jackson:5225';
+const jacksonAuthUrl = 'http://localhost:5225';
+
 const supertokenUrl = 'http://supertoken:3567';
 const apiUrl = 'http://localhost:4000';
-const appUrl = 'http://localhost:3000';
+const appUrl = 'http://localhost:3366';
 
 supertokens.init({
   framework: 'express',
@@ -43,96 +44,73 @@ supertokens.init({
         apis: (originalImplementation) => {
           return {
             ...originalImplementation,
-
-            // Return authorize URL
             authorisationUrlGET: async (input) => {
-              const { options } = input;
-              const { req } = options;
-
-              const tenant = req.getKeyValueFromQuery('tenant');
-              const product = req.getKeyValueFromQuery('product');
-
-              const url = new URL(`${jacksonAuthUrl}/api/oauth/authorize`);
-
-              url.searchParams.append(
-                'client_id',
-                encodeURI(`tenant=${tenant}&product=${product}`)
-              );
-
-              return {
-                status: 'OK',
-                url: url.href,
-              };
+              input.userContext.request = input.options.req.original
+              return originalImplementation.authorisationUrlGET(input);
             },
-
-            // Signup
             thirdPartySignInUpPOST: async (input) => {
-              const { code, redirectURI, options } = input;
-              const { signInUp } = options.recipeImplementation;
-              const { req, res } = options;
-
-              const tenant = req.getKeyValueFromQuery('tenant');
-              const product = req.getKeyValueFromQuery('product');
-
-              // Code exchange
-              const token = await axios({
-                method: 'post',
-                url: `${jacksonApiUrl}/api/oauth/token`,
-                data: {
-                  client_id: encodeURI(`tenant=${tenant}&product=${product}`),
-                  client_secret: 'client-secret',
-                  grant_type: 'authorization_code',
-                  redirect_uri: redirectURI,
-                  code: code,
-                },
-              });
-
-              // Get profile
-              const profile = await axios({
-                method: 'get',
-                url: `${jacksonApiUrl}/api/oauth/userinfo`,
-                headers: {
-                  Authorization: `Bearer ${token.data.access_token}`,
-                },
-              });
-
-              try {
-                // Signup
-                const result = await signInUp({
-                  thirdPartyUserId: profile.data.id,
-                  thirdPartyId: 'saml-jackson',
-                  email: {
-                    id: profile.data.email,
-                    isVerified: true,
-                  },
-                });
-
-                // Create session
-                await Session.createNewSession(res, result.user.id);
-
-                return result;
-              } catch (e) {
-                console.log(e)
-              }
+              input.userContext.request = input.options.req.original
+              return originalImplementation.thirdPartySignInUpPOST(input);
             },
           };
         },
       },
-
       providers: [
         {
-          id: 'saml-jackson',
-        },
-      ],
+          id: "saml-jackson",
+          get: (redirectURI, authCodeFromRequest, userContext) => {
+            let request = userContext.request;
+            let tenant = request === undefined ? "" : request.query.tenant;
+            let product = request === undefined ? "" : request.query.product;
+            let client_id = encodeURI(`tenant=${tenant}&product=${product}`)
+            return {
+              accessTokenAPI: {
+                url: `${jacksonApiUrl}/api/oauth/token`,
+                params: {
+                  client_id,
+                  client_secret: "dummy",
+                  grant_type: "authorization_code",
+                  redirect_uri: redirectURI,
+                  code: authCodeFromRequest,
+                }
+              },
+              authorisationRedirect: {
+                url: `${jacksonAuthUrl}/api/oauth/authorize`,
+                params: {
+                  client_id
+                }
+              },
+              getClientId: () => {
+                return client_id;
+              },
+              getProfileInfo: async (accessTokenAPIResponse) => {
+                const profile = await axios({
+                  method: 'get',
+                  url: `${jacksonApiUrl}/api/oauth/userinfo`,
+                  headers: {
+                    Authorization: `Bearer ${accessTokenAPIResponse.access_token}`,
+                  },
+                });
+                return {
+                  id: profile.data.id,
+                  email: {
+                    id: profile.data.email,
+                    isVerified: true
+                  }
+                };
+              }
+            }
+          }
+        }
+      ]
     }),
-
     Session.init(),
   ],
 });
 
 app.use(
   cors({
-    origin: 'http://localhost:3000',
+    origin: 'http://localhost:3366',
     allowedHeaders: ['content-type', ...supertokens.getAllCORSHeaders()],
     credentials: true,
   })
@@ -147,6 +125,6 @@ app.use(function (req, res, next) {
 });
 
 // error handler
-app.use(function (err, req, res, next) {});
+app.use(function (err, req, res, next) { });
 
 module.exports = app;

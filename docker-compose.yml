@@ -12,12 +12,12 @@ services:
       - supertokens
 
   jackson:
-    image: "boxyhq/jackson:0.3.6"
+    image: "boxyhq/jackson:0.4.1"
     platform: linux/amd64
     depends_on:
       - postgres
     ports:
-      - 5000:5000
+      - 5225:5225
     environment:
       - JACKSON_API_KEYS=secret
       - DB_ENGINE=sql
@@ -40,7 +40,7 @@ services:
   app:
     build: ./app
     ports:
-      - 3000:3000
+      - 3366:3366
     networks:
       - supertokens
 
