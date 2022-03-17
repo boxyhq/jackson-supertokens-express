@@ -12,7 +12,7 @@ services:
       - supertokens
 
   jackson:
-    image: "boxyhq/jackson:0.4.1"
+    image: "boxyhq/jackson:0.4.3"
     platform: linux/amd64
     depends_on:
       - postgres
