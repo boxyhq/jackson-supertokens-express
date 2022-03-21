@@ -108,7 +108,34 @@ supertokens.init({
         },
       ],
     }),
-    Session.init(),
+    Session.init({
+      override: {
+        functions: (originalImplementation) => {
+          return {
+            ...originalImplementation,
+            createNewSession: async function (input) {
+              console.log({ input: input.userContext });
+
+              let userId = input.userId;
+
+              // This goes in the access token, and is available to read on the frontend.
+              input.accessTokenPayload = {
+                ...input.accessTokenPayload,
+                someKey: "someValue",
+              };
+
+              // This is stored in the db against the sessionHandle for this session
+              input.sessionData = {
+                ...input.sessionData,
+                someKey: "someValue",
+              };
+
+              return originalImplementation.createNewSession(input);
+            },
+          };
+        },
+      },
+    }),
   ],
 });
 
