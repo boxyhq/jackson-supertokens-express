@@ -1,6 +1,6 @@
 version: "3.8"
 
-services:  
+services:
   postgres:
     image: postgres:13
     ports:
@@ -12,7 +12,7 @@ services:
       - supertokens
 
   jackson:
-    image: "boxyhq/jackson:0.4.3"
+    image: "boxyhq/jackson:0.5.1"
     platform: linux/amd64
     depends_on:
       - postgres
