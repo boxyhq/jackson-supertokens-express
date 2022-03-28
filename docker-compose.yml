@@ -1,6 +1,6 @@
 version: "3.8"
 
-services:  
+services:
   postgres:
     image: postgres:13
     ports:
@@ -34,6 +34,24 @@ services:
       - 3567:3567
     environment:
       - POSTGRESQL_CONNECTION_URI=postgres://postgres:postgres@postgres:5432/postgres
+    networks:
+      - supertokens
+
+  hasura:
+    image: hasura/graphql-engine:v2.3.0
+    ports:
+      - "8080:8080"
+    depends_on:
+      - "postgres"
+    restart: always
+    environment:
+      HASURA_GRAPHQL_METADATA_DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      PG_DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      HASURA_GRAPHQL_ENABLE_CONSOLE: "true"
+      HASURA_GRAPHQL_DEV_MODE: "true"
+      HASURA_GRAPHQL_ENABLED_LOG_TYPES: startup, http-log, webhook-log, websocket-log, query-log
+      HASURA_GRAPHQL_ADMIN_SECRET: admin-secret-key
+      HASURA_GRAPHQL_JWT_SECRET: '{"jwk_url": "http://api:4000/auth/jwt/jwks.json"}'
     networks:
       - supertokens
 

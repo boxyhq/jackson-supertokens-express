@@ -9,6 +9,7 @@ let Session = require('supertokens-node/recipe/session');
 let { middleware } = require('supertokens-node/framework/express');
 let { errorHandler } = require('supertokens-node/framework/express');
 let ThirdPartyEmailPassword = require('supertokens-node/recipe/thirdpartyemailpassword');
+const { verifySession } = require("supertokens-node/recipe/session/framework/express");
 
 var app = express();
 
@@ -20,6 +21,13 @@ app.use(cookieParser());
 app.use('/hello', (req, res) => {
   res.send('Hello there')
 })
+
+app.get("/getJWT", verifySession(), async (req, res) => {
+  const session = req.session;
+  const jwt = session.getAccessTokenPayload()["jwt"];
+
+  res.json({ token: jwt })
+});
 
 const jacksonApiUrl = 'http://jackson:5225';
 const jacksonAuthUrl = 'http://localhost:5225';
@@ -104,7 +112,33 @@ supertokens.init({
         }
       ]
     }),
-    Session.init(),
+    Session.init({
+      jwt: {
+          enable: true,
+         // issuer: 'SAML Jackson',
+      },
+      override: {
+        functions(originalImplementation) {
+          return {
+              ...originalImplementation,
+              async createNewSession(sessionInput) {
+                  const input = sessionInput;
+
+                  input.accessTokenPayload = {
+                      ...input.accessTokenPayload,
+                      'https://hasura.io/jwt/claims': {
+                          'x-hasura-user-id': input.userId,
+                          'x-hasura-default-role': 'user',
+                          'x-hasura-allowed-roles': ['user', 'anonymous', 'admin'],
+                      },
+                  };
+
+                  return originalImplementation.createNewSession(input);
+              },
+          };
+      },
+      }
+  }),
   ],
 });
 

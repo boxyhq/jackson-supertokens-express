@@ -1,16 +1,12 @@
-import { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import SuperTokens, {
-  getSuperTokensRoutesForReactRouterDom,
-} from 'supertokens-auth-react';
-import Session from 'supertokens-auth-react/recipe/session';
-import ThirdPartyEmailPassword, {
-  ThirdPartyEmailPasswordAuth,
-} from 'supertokens-auth-react/recipe/thirdpartyemailpassword';
-import './App.css';
-import Footer from './Footer';
-import Home from './Home';
-import SessionExpiredPopup from './SessionExpiredPopup';
+import { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import SuperTokens, { getSuperTokensRoutesForReactRouterDom } from "supertokens-auth-react";
+import Session from "supertokens-auth-react/recipe/session";
+import ThirdPartyEmailPassword, { ThirdPartyEmailPasswordAuth } from "supertokens-auth-react/recipe/thirdpartyemailpassword";
+import "./App.css";
+import Footer from "./Footer";
+import Home from "./Home";
+import SessionExpiredPopup from "./SessionExpiredPopup";
 
 export function getApiDomain() {
   const apiPort = process.env.REACT_APP_API_PORT || 4000;
@@ -20,14 +16,13 @@ export function getApiDomain() {
 
 export function getWebsiteDomain() {
   const websitePort = process.env.REACT_APP_WEBSITE_PORT || 3366;
-  const websiteUrl =
-    process.env.REACT_APP_WEBSITE_URL || `http://localhost:${websitePort}`;
+  const websiteUrl = process.env.REACT_APP_WEBSITE_URL || `http://localhost:${websitePort}`;
   return websiteUrl;
 }
 
 SuperTokens.init({
   appInfo: {
-    appName: 'Jackson',
+    appName: "Jackson",
     apiDomain: getApiDomain(),
     websiteDomain: getWebsiteDomain(),
   },
@@ -37,14 +32,14 @@ SuperTokens.init({
         let url = new URL(context.url);
         let action = context.action;
 
-        if (action === 'GET_AUTHORISATION_URL') {
-          url.searchParams.append('tenant', 'boxyhq.com');
-          url.searchParams.append('product', 'supertokens');
+        if (action === "GET_AUTHORISATION_URL") {
+          url.searchParams.append("tenant", "boxyhq.com");
+          url.searchParams.append("product", "supertokens");
         }
 
-        if (action === 'THIRD_PARTY_SIGN_IN_UP') {
-          url.searchParams.append('tenant', 'boxyhq.com');
-          url.searchParams.append('product', 'supertokens');
+        if (action === "THIRD_PARTY_SIGN_IN_UP") {
+          url.searchParams.append("tenant", "boxyhq.com");
+          url.searchParams.append("product", "supertokens");
         }
 
         return {
@@ -56,8 +51,8 @@ SuperTokens.init({
       signInAndUpFeature: {
         providers: [
           {
-            id: 'saml-jackson',
-            name: 'SAML Jackson',
+            id: "saml-jackson",
+            name: "SAML Jackson",
           },
         ],
       },
@@ -67,23 +62,17 @@ SuperTokens.init({
 });
 
 function App() {
-  let [showSessionExpiredPopup, updateShowSessionExpiredPopup] =
-    useState(false);
+  const [showSessionExpiredPopup, updateShowSessionExpiredPopup] = useState(false);
 
   return (
     <div className="App">
       <Router>
         <div className="fill">
           <Routes>
-            {/* This shows the login UI on "/auth" route */}
-            {getSuperTokensRoutesForReactRouterDom(require('react-router-dom'))}
-
+            {getSuperTokensRoutesForReactRouterDom(require("react-router-dom"))}
             <Route
               path="/"
               element={
-                /* This protects the "/" route so that it shows
-                                   <Home /> only if the user is logged in.
-                                   Else it redirects the user to "/auth" */
                 <ThirdPartyEmailPasswordAuth
                   onSessionExpired={() => {
                     updateShowSessionExpiredPopup(true);
