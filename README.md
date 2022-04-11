@@ -24,11 +24,11 @@ Open [http://localhost:3366](http://localhost:3366) to see the demo.
 ## Using [mocksaml.com](https://mocksaml.com/) to quickly test a SAML connection
 This demo app uses mocksaml.com as a SAML provider. To add a tenant for the provider, start the local dev env, and run:
 ```bash
-./addTenantToBoxy.sh <tenantID>
+./addTenant.sh <tenantID>
 
 # for example:
-./addTenantToBoxy.sh app1.com
-./addTenantToBoxy.sh app2.com
+./addTenant.sh app1.com
+./addTenant.sh app2.com
 ```
 
 In the above example, we add two tenants to the app:
