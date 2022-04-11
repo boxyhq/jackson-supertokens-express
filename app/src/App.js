@@ -40,7 +40,7 @@ SuperTokens.init({
               <div>
                 <label>
                   {"Tenant ID: "}
-                  <input id="saml-tenant" type="text" name="tenant" defaultValue={"boxyhq.com"} />
+                  <input id="saml-tenant" type="text" name="tenant" defaultValue={"app1.com"} />
                 </label>
                 <DefaultComponent {...props} />
               </div>
