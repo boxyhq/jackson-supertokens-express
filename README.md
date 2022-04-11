@@ -35,7 +35,7 @@ In the above example, we add two tenants to the app:
 - app1.com
 - app2.com
 
-In the [login UI](http://localhost:3366) you will see a boxy above the SAML login button that asks you to add a tenant ID. In that, you can type in any tenantID that you have created.
+In the [login UI](http://localhost:3366) you will see an input box above the SAML login button that asks you to add a tenant ID. In that, you can type in any tenantID that you have created.
 
 ## Manually adding a SAML provider
 ### Configure SAML Identity Provider
