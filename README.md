@@ -18,7 +18,7 @@ cd jackson-supertokens-express
 npm run dev
 ```
 
-Open [http://localhost:3366](http://localhost:3366) to try the demo. Click on the button `Continue with SAML Jackson`.
+Open [http://localhost:3366](http://localhost:3366) to see the demo.
 
 
 ## Using [mocksaml.com](https://mocksaml.com/) to quickly test a SAML connection
