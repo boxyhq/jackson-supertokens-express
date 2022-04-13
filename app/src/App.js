@@ -33,17 +33,35 @@ SuperTokens.init({
   },
   recipeList: [
     ThirdPartyEmailPassword.init({
+      override: {
+        components: {
+          ThirdPartySignInAndUpProvidersForm_Override: ({ DefaultComponent, ...props }) => {
+            return (
+              <div>
+                <label>
+                  {"Tenant ID: "}
+                  <input id="saml-tenant" type="text" name="tenant" defaultValue={"app1.com"} />
+                </label>
+                <DefaultComponent {...props} />
+              </div>
+            );
+          }
+        }
+      },
       preAPIHook: async (context) => {
         let url = new URL(context.url);
         let action = context.action;
 
         if (action === 'GET_AUTHORISATION_URL') {
-          url.searchParams.append('tenant', 'boxyhq.com');
+          let tenantId = document.querySelector("#supertokens-root").shadowRoot.getElementById("saml-tenant").value;
+          localStorage.setItem("saml-tenant-id", tenantId)
+          url.searchParams.append('tenant', tenantId);
           url.searchParams.append('product', 'supertokens');
         }
 
         if (action === 'THIRD_PARTY_SIGN_IN_UP') {
-          url.searchParams.append('tenant', 'boxyhq.com');
+          let tenantId = localStorage.getItem("saml-tenant-id");
+          url.searchParams.append('tenant', tenantId);
           url.searchParams.append('product', 'supertokens');
         }
 

@@ -18,10 +18,30 @@ cd jackson-supertokens-express
 npm run dev
 ```
 
-## Configure SAML Identity Provider
+Open [http://localhost:3366](http://localhost:3366) to see the demo.
+
+
+## Using [mocksaml.com](https://mocksaml.com/) to quickly test a SAML connection
+This demo app uses mocksaml.com as a SAML provider. To add a tenant for the provider, start the local dev env, and run:
+```bash
+./addTenant.sh <tenantID>
+
+# for example:
+./addTenant.sh app1.com
+./addTenant.sh app2.com
+```
+
+In the above example, we add two tenants to the app:
+- app1.com
+- app2.com
+
+In the [login UI](http://localhost:3366) you will see an input box above the SAML login button that asks you to add a tenant ID. In that, you can type in any tenantID that you have created.
+
+## Manually adding a SAML provider
+### Configure SAML Identity Provider
 Follow the [doc](https://boxyhq.com/docs/jackson/configure-saml-idp). You will then need to download the SAML metadata file after configuring the SAML app with your Identity Provider. Okta is a good place and offers a free Developer Account. Feel free to contact us if you need any help with this.
 
-## Add SAML Config
+### Add SAML Config
 
 Replace `<Metadata>` with the your metadata content.
 
