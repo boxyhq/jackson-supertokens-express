@@ -8,5 +8,3 @@ curl --location --request POST 'http://localhost:5225/api/v1/saml/config' \
 --data-urlencode 'product=supertokens' \
 --data-urlencode 'name=supertokens-config' \
 --data-urlencode 'description=SuperTokens + BOXYHQ SAML config'
-
-echo "tenant=$1"
