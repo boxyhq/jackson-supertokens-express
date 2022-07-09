@@ -6,8 +6,12 @@ import { useNavigate } from "react-router-dom";
 import { signOut } from "supertokens-auth-react/recipe/thirdpartyemailpassword";
 
 export default function Home() {
-    const { userId } = useSessionContext();
     const navigate = useNavigate();
+    const sessionInfo = useSessionContext();
+    if (sessionInfo.loading) {
+        return null;
+    }
+    let userId = sessionInfo.userId;
 
     async function logoutClicked() {
         await signOut();
